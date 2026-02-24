@@ -35,3 +35,5 @@
 - 以 Strapi 作为统一 CMS：`layout-blocks/products/articles/leads`。
 - 前台仅消费公开 API；后台通过 JWT 调用写接口。
 - 保留静态前端部署能力，CMS 可独立扩容。
+
+- Strapi 安装脚本：仓库内置 `strapi/install.sh`，可一键创建 CMS 并注入内容模型模板。

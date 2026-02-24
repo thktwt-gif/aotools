@@ -1,0 +1,22 @@
+{
+  "kind": "collectionType",
+  "collectionName": "articles",
+  "info": {
+    "singularName": "article",
+    "pluralName": "articles",
+    "displayName": "Article"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "title": { "type": "string", "required": true },
+    "excerpt": { "type": "text" },
+    "order": { "type": "integer", "default": 0 }
+  }
+}
