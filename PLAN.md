@@ -7,8 +7,8 @@
 ## 2) 已在原型落地的能力
 - 前台：多语言切换、语言级断词策略、伪本地化测试、溢出预警。
 - 组件 fitMode：`wrap`、`truncate`、`auto`。
-- 留言提交：`/api/lead.php`，支持写入日志并推送邮箱/企业微信。
-- 后台原型：模块导航、KPI、fitMode 策略说明、推送配置说明。
+- 留言提交：写入 Strapi `leads` 集合，可扩展 webhook/邮件自动化。
+- 后台原型：Strapi 登录后管理布局区块、产品、文章。
 
 ## 3) 后续建议（分期）
 ### MVP
@@ -29,3 +29,9 @@
 - 图标：Heroicons（MIT）、Lucide（ISC）、Tabler（MIT）。
 - 图片：Openverse 检索（按许可过滤）、Unsplash/Pexels（遵守各自许可条款）。
 - 系统侧必须记录素材来源、许可、作者与归因要求。
+
+
+## 5) Strapi 重构原则
+- 以 Strapi 作为统一 CMS：`layout-blocks/products/articles/leads`。
+- 前台仅消费公开 API；后台通过 JWT 调用写接口。
+- 保留静态前端部署能力，CMS 可独立扩容。

@@ -1,150 +1,129 @@
-const state = { layout: [], products: [], articles: [] };
+const state = {
+  url: localStorage.getItem('strapi_url') || 'http://127.0.0.1:1337',
+  jwt: localStorage.getItem('strapi_jwt') || '',
+  blocks: [],
+  products: [],
+  articles: []
+};
 
-const layoutList = document.getElementById('layoutList');
-const productList = document.getElementById('productList');
-const articleList = document.getElementById('articleList');
-const statusEl = document.getElementById('adminStatus');
+const $ = (s) => document.querySelector(s);
+const statusEl = $('#adminStatus');
 
-function uid() { return Date.now() + Math.floor(Math.random() * 10000); }
-
-async function loadContent() {
-  const res = await fetch('api/content.php');
-  const json = await res.json();
-  Object.assign(state, json.data || {});
-  renderAll();
+function setStatus(msg, err = false) {
+  statusEl.textContent = msg;
+  statusEl.className = `section-sub ${err ? 'err' : 'ok'}`;
 }
 
-function blockTitle(type) {
-  if (type === 'hero') return 'Hero 区块';
-  if (type === 'features') return 'Features 区块';
-  return 'CTA 区块';
+async function strapi(path, options = {}, auth = true) {
+  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  if (auth && state.jwt) headers.Authorization = `Bearer ${state.jwt}`;
+  const res = await fetch(`${state.url}${path}`, { ...options, headers });
+  if (!res.ok) throw new Error(`${res.status} ${path}`);
+  return res.json();
 }
 
-function renderLayout() {
-  layoutList.innerHTML = '';
-  state.layout.forEach((block, index) => {
-    const item = document.createElement('article');
-    item.className = 'admin-item';
-    item.draggable = true;
-    item.dataset.index = String(index);
-    item.innerHTML = `
-      <div class="admin-item-head">
-        <strong>${blockTitle(block.type)}</strong>
-        <div>
-          <button type="button" data-act="up">↑</button>
-          <button type="button" data-act="down">↓</button>
-          <button type="button" data-act="del">删除</button>
-        </div>
-      </div>
-      <input data-field="title" value="${(block.title || '').replace(/"/g, '&quot;')}" placeholder="区块标题" />
-      <textarea data-field="body" rows="3" placeholder="区块文案">${block.body || ''}</textarea>
-    `;
-
-    item.querySelectorAll('[data-field]').forEach((el) => {
-      el.addEventListener('input', (e) => {
-        const field = e.target.dataset.field;
-        state.layout[index][field] = e.target.value;
-      });
-    });
-
-    item.querySelectorAll('button[data-act]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const act = btn.dataset.act;
-        if (act === 'del') state.layout.splice(index, 1);
-        if (act === 'up' && index > 0) [state.layout[index - 1], state.layout[index]] = [state.layout[index], state.layout[index - 1]];
-        if (act === 'down' && index < state.layout.length - 1) [state.layout[index + 1], state.layout[index]] = [state.layout[index], state.layout[index + 1]];
-        renderLayout();
-      });
-    });
-
-    item.addEventListener('dragstart', () => item.classList.add('dragging'));
-    item.addEventListener('dragend', () => item.classList.remove('dragging'));
-    layoutList.appendChild(item);
-  });
-}
-
-layoutList.addEventListener('dragover', (e) => {
-  e.preventDefault();
-  const dragging = layoutList.querySelector('.dragging');
-  if (!dragging) return;
-  const nodes = [...layoutList.querySelectorAll('.admin-item:not(.dragging)')];
-  const next = nodes.find((n) => e.clientY <= n.getBoundingClientRect().top + n.offsetHeight / 2);
-  if (next) layoutList.insertBefore(dragging, next); else layoutList.appendChild(dragging);
-});
-
-layoutList.addEventListener('drop', () => {
-  const order = [...layoutList.querySelectorAll('.admin-item')].map((el) => Number(el.dataset.index));
-  state.layout = order.map((i) => state.layout[i]);
-  renderLayout();
-});
-
-function renderProducts() {
-  productList.innerHTML = state.products.map((p, i) => `
-    <article class="admin-item">
-      <div class="admin-item-head"><strong>${p.name}</strong><button data-del-product="${i}">删除</button></div>
-      <p>${p.category}</p>
-      <p>${p.summary}</p>
-    </article>`).join('');
-
-  productList.querySelectorAll('[data-del-product]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      state.products.splice(Number(btn.dataset.delProduct), 1);
-      renderProducts();
-    });
-  });
-}
-
-function renderArticles() {
-  articleList.innerHTML = state.articles.map((a, i) => `
-    <article class="admin-item">
-      <div class="admin-item-head"><strong>${a.title}</strong><button data-del-article="${i}">删除</button></div>
-      <p>${a.status}</p>
-      <p>${a.excerpt}</p>
-    </article>`).join('');
-
-  articleList.querySelectorAll('[data-del-article]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      state.articles.splice(Number(btn.dataset.delArticle), 1);
-      renderArticles();
-    });
-  });
-}
-
-function renderAll() { renderLayout(); renderProducts(); renderArticles(); }
-
-document.querySelectorAll('[data-add-block]').forEach((btn) => {
-  btn.addEventListener('click', () => {
-    const type = btn.dataset.addBlock;
-    state.layout.push({ id: uid(), type, title: `${type.toUpperCase()} Title`, body: 'Edit content...' });
-    renderLayout();
-  });
-});
-
-document.getElementById('productForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const data = Object.fromEntries(new FormData(e.target).entries());
-  state.products.unshift({ id: uid(), ...data });
-  e.target.reset();
-  renderProducts();
-});
-
-document.getElementById('articleForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const data = Object.fromEntries(new FormData(e.target).entries());
-  state.articles.unshift({ id: uid(), ...data });
-  e.target.reset();
-  renderArticles();
-});
-
-document.getElementById('saveAllBtn').addEventListener('click', async () => {
-  statusEl.textContent = '保存中...';
-  const res = await fetch('api/content.php', {
+async function login() {
+  const identifier = $('#loginEmail').value.trim();
+  const password = $('#loginPassword').value.trim();
+  const url = $('#strapiUrl').value.trim();
+  localStorage.setItem('strapi_url', url);
+  state.url = url;
+  const data = await strapi('/api/auth/local', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(state),
+    body: JSON.stringify({ identifier, password })
+  }, false);
+  state.jwt = data.jwt;
+  localStorage.setItem('strapi_jwt', data.jwt);
+  $('#loginBox').style.display = 'none';
+  $('#cmsBox').style.display = 'block';
+  await refreshAll();
+}
+
+function toModel(entry) {
+  return { id: entry.id, ...(entry.attributes || entry) };
+}
+
+async function refreshAll() {
+  const query = '?pagination[pageSize]=100&sort[0]=order:asc&sort[1]=createdAt:asc';
+  const [b, p, a] = await Promise.all([
+    strapi(`/api/layout-blocks${query}`),
+    strapi(`/api/products${query}`),
+    strapi(`/api/articles${query}`)
+  ]);
+  state.blocks = b.data.map(toModel);
+  state.products = p.data.map(toModel);
+  state.articles = a.data.map(toModel);
+  render();
+  setStatus('Synced from Strapi.');
+}
+
+function renderList(container, data, type) {
+  container.innerHTML = '';
+  data.forEach((item) => {
+    const row = document.createElement('div');
+    row.className = 'admin-item';
+    const title = type === 'blocks' ? item.title : (item.name || item.title);
+    row.innerHTML = `<strong>${title || '(untitled)'}</strong><p>${item.description || item.body || item.excerpt || ''}</p>
+      <button class="btn btn-outline" data-del="${type}" data-id="${item.id}">Delete</button>`;
+    container.appendChild(row);
   });
-  const json = await res.json();
-  statusEl.textContent = json.ok ? '保存成功，前台已可读取最新内容。' : '保存失败';
+}
+
+function render() {
+  renderList($('#blockList'), state.blocks, 'blocks');
+  renderList($('#productList'), state.products, 'products');
+  renderList($('#articleList'), state.articles, 'articles');
+}
+
+async function create(type) {
+  if (type === 'block') {
+    await strapi('/api/layout-blocks', { method: 'POST', body: JSON.stringify({ data: {
+      title: $('#blockTitle').value, body: $('#blockBody').value, fitMode: $('#blockFit').value, maxLines: Number($('#blockLines').value || 2), order: Date.now()
+    } }) });
+  }
+  if (type === 'product') {
+    await strapi('/api/products', { method: 'POST', body: JSON.stringify({ data: {
+      name: $('#productName').value, description: $('#productDesc').value, spec: $('#productSpec').value, order: Date.now()
+    } }) });
+  }
+  if (type === 'article') {
+    await strapi('/api/articles', { method: 'POST', body: JSON.stringify({ data: {
+      title: $('#articleTitle').value, excerpt: $('#articleExcerpt').value, order: Date.now()
+    } }) });
+  }
+  await refreshAll();
+}
+
+async function remove(type, id) {
+  const map = { blocks: 'layout-blocks', products: 'products', articles: 'articles' };
+  await strapi(`/api/${map[type]}/${id}`, { method: 'DELETE' });
+  await refreshAll();
+}
+
+document.addEventListener('click', async (e) => {
+  const del = e.target.dataset.del;
+  if (del) {
+    await remove(del, e.target.dataset.id).catch((err) => setStatus(err.message, true));
+    return;
+  }
+  if (e.target.id === 'loginBtn') login().catch((err) => setStatus(err.message, true));
+  if (e.target.id === 'reloadBtn') refreshAll().catch((err) => setStatus(err.message, true));
+  if (e.target.id === 'addBlockBtn') create('block').catch((err) => setStatus(err.message, true));
+  if (e.target.id === 'addProductBtn') create('product').catch((err) => setStatus(err.message, true));
+  if (e.target.id === 'addArticleBtn') create('article').catch((err) => setStatus(err.message, true));
+  if (e.target.id === 'logoutBtn') {
+    localStorage.removeItem('strapi_jwt');
+    state.jwt = '';
+    $('#loginBox').style.display = 'block';
+    $('#cmsBox').style.display = 'none';
+  }
 });
 
-loadContent();
+(function boot() {
+  $('#strapiUrl').value = state.url;
+  if (state.jwt) {
+    $('#loginBox').style.display = 'none';
+    $('#cmsBox').style.display = 'block';
+    refreshAll().catch((err) => setStatus(err.message, true));
+  }
+})();
