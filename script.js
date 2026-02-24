@@ -84,7 +84,67 @@ function applyLanguage(locale) {
     node.placeholder = dict[key] || translations.en[key] || '';
   });
 
+  updateSeoMeta(locale);
   renderDynamic();
+}
+
+function updateSeoMeta(locale) {
+  const isZh = locale === 'zh-CN';
+  const title = isZh
+    ? 'CanPack Pro | 工业包装设备建站系统'
+    : 'CanPack Pro | Industrial Packaging Website Builder';
+  const description = isZh
+    ? '支持多语言、SEO与SEM投放追踪的工业营销站，含拖拽布局和后台CMS。'
+    : 'Industrial marketing website with multilingual content, SEO metadata, and SEM attribution tracking.';
+
+  document.title = title;
+
+  const setMeta = (selector, value) => {
+    const el = document.querySelector(selector);
+    if (el) el.setAttribute('content', value);
+  };
+
+  setMeta('meta[name="description"]', description);
+  setMeta('meta[property="og:title"]', title);
+  setMeta('meta[property="og:description"]', description);
+  setMeta('meta[name="twitter:title"]', title);
+  setMeta('meta[name="twitter:description"]', description);
+}
+
+function captureSemParams() {
+  const params = new URLSearchParams(window.location.search);
+  const semFields = [
+    'utm_source',
+    'utm_medium',
+    'utm_campaign',
+    'utm_term',
+    'utm_content',
+    'gclid',
+    'fbclid',
+  ];
+
+  semFields.forEach((key) => {
+    const fromUrl = params.get(key);
+    if (fromUrl) {
+      sessionStorage.setItem(key, fromUrl);
+    }
+  });
+
+  const keywordFromQuery = params.get('keyword') || params.get('q') || '';
+  if (keywordFromQuery) sessionStorage.setItem('keyword', keywordFromQuery);
+
+  if (form) {
+    semFields.concat(['keyword']).forEach((key) => {
+      const input = form.querySelector(`input[name="${key}"]`);
+      if (input) input.value = sessionStorage.getItem(key) || '';
+    });
+
+    const landingInput = form.querySelector('input[name="landing_page"]');
+    if (landingInput) landingInput.value = window.location.href;
+
+    const refInput = form.querySelector('input[name="referrer"]');
+    if (refInput) refInput.value = document.referrer || '';
+  }
 }
 
 function renderDynamic() {
@@ -143,7 +203,10 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
   resultEl.className = '';
   if (!form.reportValidity()) return;
+
+  captureSemParams();
   const payload = Object.fromEntries(new FormData(form).entries());
+
   try {
     const res = await fetch('api/lead.php', {
       method: 'POST',
@@ -155,11 +218,13 @@ form.addEventListener('submit', async (e) => {
     resultEl.textContent = t('submitOk');
     resultEl.classList.add('ok');
     form.reset();
+    captureSemParams();
   } catch (_e) {
     resultEl.textContent = t('submitFail');
     resultEl.classList.add('error');
   }
 });
 
+captureSemParams();
 loadContent();
 applyLanguage('zh-CN');
