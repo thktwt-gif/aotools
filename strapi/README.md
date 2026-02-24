@@ -65,3 +65,20 @@ python3 -m http.server 4173
 - 前台：`http://127.0.0.1:4173/index.html`
 - 后台：`http://127.0.0.1:4173/admin.html`
 
+
+## 6. 截图失败排查（Playwright / browser tool）
+
+如果出现 `NS_ERROR_NET_RESET`，通常不是页面代码报错，而是截图进程连不到本地静态服务。
+
+常见原因：
+- 启动服务命令把 `python3 -m http.server` 放在复合命令子 shell 中，父 shell 退出后后台进程被回收。
+- 服务未绑定到可转发地址/端口，或截图工具运行环境与当前 shell 不是同一网络命名空间。
+
+建议启动方式（更稳定）：
+
+```bash
+nohup python3 -m http.server 4173 --bind 0.0.0.0 >/tmp/aotools_http.log 2>&1 &
+curl -I http://127.0.0.1:4173/index.html
+```
+
+若 `curl` 正常而截图仍失败，则说明是截图容器网络连通问题（环境限制），不是业务前端代码问题。
