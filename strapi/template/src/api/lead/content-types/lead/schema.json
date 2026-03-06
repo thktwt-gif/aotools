@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "leads",
+  "info": {
+    "singularName": "lead",
+    "pluralName": "leads",
+    "displayName": "Lead"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": { "type": "string", "required": true },
+    "email": { "type": "email" },
+    "message": { "type": "text" },
+    "consent": { "type": "string" },
+    "locale": { "type": "string" },
+    "utm_source": { "type": "string" },
+    "utm_medium": { "type": "string" },
+    "utm_campaign": { "type": "string" },
+    "utm_term": { "type": "string" },
+    "utm_content": { "type": "string" },
+    "gclid": { "type": "string" },
+    "fbclid": { "type": "string" },
+    "keyword": { "type": "string" },
+    "landing_page": { "type": "text" },
+    "referrer": { "type": "text" }
+  }
+}

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Strapi CMS Admin</title>
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="header shell">
+      <a class="logo" href="index.html">CanPack <span>Pro</span></a>
+      <a class="btn btn-outline" href="index.html">返回前台</a>
+    </header>
+
+    <main class="section shell panel">
+      <h1>Strapi 管理后台（重构版）</h1>
+      <p class="section-sub">使用 Strapi 管理布局、产品、文章。先登录 Strapi，再在此轻量管理内容。</p>
+
+      <section id="loginBox" class="admin-panel">
+        <h2>1) 连接 Strapi</h2>
+        <div class="admin-form">
+          <input id="strapiUrl" type="text" placeholder="Strapi URL (e.g. http://127.0.0.1:1337)" />
+          <input id="loginEmail" type="text" placeholder="Email / Username" />
+          <input id="loginPassword" type="password" placeholder="Password" />
+          <button id="loginBtn" class="btn btn-primary" type="button">登录并同步</button>
+        </div>
+      </section>
+
+      <section id="cmsBox" class="admin-grid" style="display:none">
+        <article class="admin-panel">
+          <h2>布局区块</h2>
+          <div class="admin-form">
+            <input id="blockTitle" type="text" placeholder="标题" />
+            <textarea id="blockBody" rows="3" placeholder="内容"></textarea>
+            <select id="blockFit"><option value="wrap">wrap</option><option value="truncate">truncate</option><option value="auto">auto</option></select>
+            <input id="blockLines" type="number" min="1" max="4" value="2" />
+            <button id="addBlockBtn" class="btn btn-primary" type="button">新增区块</button>
+          </div>
+          <div id="blockList" class="admin-list"></div>
+        </article>
+
+        <article class="admin-panel">
+          <h2>产品管理</h2>
+          <div class="admin-form">
+            <input id="productName" type="text" placeholder="产品名" />
+            <textarea id="productDesc" rows="2" placeholder="描述"></textarea>
+            <input id="productSpec" type="text" placeholder="规格" />
+            <button id="addProductBtn" class="btn btn-primary" type="button">新增产品</button>
+          </div>
+          <div id="productList" class="admin-list"></div>
+        </article>
+
+        <article class="admin-panel">
+          <h2>文章管理</h2>
+          <div class="admin-form">
+            <input id="articleTitle" type="text" placeholder="标题" />
+            <textarea id="articleExcerpt" rows="2" placeholder="摘要"></textarea>
+            <button id="addArticleBtn" class="btn btn-primary" type="button">新增文章</button>
+          </div>
+          <div id="articleList" class="admin-list"></div>
+        </article>
+      </section>
+
+      <div class="hero-cta">
+        <button id="reloadBtn" class="btn btn-outline" type="button">刷新数据</button>
+        <button id="logoutBtn" class="btn btn-outline" type="button">退出登录</button>
+      </div>
+      <p id="adminStatus" class="section-sub"></p>
+    </main>
+
+    <script src="admin.js"></script>
+  </body>
+</html>

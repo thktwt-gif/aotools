@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "layout_blocks",
+  "info": {
+    "singularName": "layout-block",
+    "pluralName": "layout-blocks",
+    "displayName": "Layout Block"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "title": { "type": "string", "required": true },
+    "body": { "type": "text" },
+    "fitMode": {
+      "type": "enumeration",
+      "enum": ["wrap", "truncate", "auto"],
+      "default": "wrap"
+    },
+    "maxLines": { "type": "integer", "default": 2, "min": 1, "max": 4 },
+    "order": { "type": "integer", "default": 0 }
+  }
+}

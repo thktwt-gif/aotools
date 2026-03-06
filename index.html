@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CanPack Pro | Industrial Packaging Website Builder</title>
+    <meta name="description" content="工业装备营销站：支持拖拽布局、后台产品与文章管理、多语言、SEO与SEM线索追踪。" />
+    <meta name="keywords" content="工业包装设备,罐装生产线,多语言建站,SEO,SEM,B2B营销" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://canpackpro.example.com/" />
+    <link rel="alternate" hreflang="zh-CN" href="https://canpackpro.example.com/?lang=zh-CN" />
+    <link rel="alternate" hreflang="en" href="https://canpackpro.example.com/?lang=en" />
+    <link rel="alternate" hreflang="x-default" href="https://canpackpro.example.com/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="CanPack Pro | Industrial Packaging Website Builder" />
+    <meta property="og:description" content="Strapi 驱动的工业官网，支持多语言与 SEO/SEM 扩展。" />
+    <meta property="og:url" content="https://canpackpro.example.com/" />
+    <meta property="og:site_name" content="CanPack Pro" />
+    <meta property="og:image" content="https://canpackpro.example.com/assets/og-cover.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="CanPack Pro | Industrial Packaging Website Builder" />
+    <meta name="twitter:description" content="Strapi 驱动的工业营销站与线索归因能力。" />
+    <meta name="twitter:image" content="https://canpackpro.example.com/assets/og-cover.jpg" />
+
+    <script type="application/ld+json" id="ldOrg">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "CanPack Pro",
+        "url": "https://canpackpro.example.com/",
+        "logo": "https://canpackpro.example.com/assets/logo.png",
+        "sameAs": []
+      }
+    </script>
+    <script type="application/ld+json" id="ldWebsite">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "CanPack Pro",
+        "url": "https://canpackpro.example.com/",
+        "inLanguage": ["zh-CN", "en"],
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://canpackpro.example.com/?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="header shell">
+      <a class="logo" href="#">CanPack <span>Pro</span></a>
+      <nav class="nav" aria-label="Main Navigation">
+        <a href="#dynamicLayout" data-i18n="navLayout"></a>
+        <a href="#products" data-i18n="navProducts"></a>
+        <a href="#articles" data-i18n="navArticles"></a>
+        <a href="#contact" data-i18n="navContact"></a>
+      </nav>
+      <div class="header-actions">
+        <select id="languageSelect" aria-label="language">
+          <option value="zh-CN">简体中文</option>
+          <option value="en">English</option>
+        </select>
+        <a class="btn btn-outline" href="admin.html" target="_blank" data-i18n="adminEntry"></a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero shell">
+        <div>
+          <p class="badge" data-i18n="heroBadge"></p>
+          <h1 data-i18n="heroTitle"></h1>
+          <p class="hero-sub" data-i18n="heroSub"></p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="admin.html" target="_blank" data-i18n="heroCta1"></a>
+            <a class="btn btn-outline" href="#contact" data-i18n="heroCta2"></a>
+          </div>
+        </div>
+      </section>
+
+      <section id="dynamicLayout" class="section shell">
+        <h2 data-i18n="layoutTitle"></h2>
+        <div id="layoutRender" class="grid"></div>
+      </section>
+
+      <section id="products" class="section shell">
+        <h2 data-i18n="productsTitle"></h2>
+        <div id="productRender" class="grid three"></div>
+      </section>
+
+      <section id="articles" class="section shell panel">
+        <h2 data-i18n="articlesTitle"></h2>
+        <div id="articleRender" class="grid two"></div>
+      </section>
+
+      <section id="contact" class="section shell panel">
+        <h2 data-i18n="leadTitle"></h2>
+        <p class="section-sub" data-i18n="leadSub"></p>
+        <form id="leadForm" class="lead-form" novalidate>
+          <input type="text" name="name" required data-i18n-placeholder="namePlaceholder" />
+          <input type="email" name="email" required data-i18n-placeholder="emailPlaceholder" />
+          <textarea name="message" rows="4" required data-i18n-placeholder="messagePlaceholder"></textarea>
+
+          <input type="hidden" name="utm_source" />
+          <input type="hidden" name="utm_medium" />
+          <input type="hidden" name="utm_campaign" />
+          <input type="hidden" name="utm_term" />
+          <input type="hidden" name="utm_content" />
+          <input type="hidden" name="gclid" />
+          <input type="hidden" name="fbclid" />
+          <input type="hidden" name="landing_page" />
+          <input type="hidden" name="referrer" />
+          <input type="hidden" name="keyword" />
+
+          <label class="consent"><input type="checkbox" name="consent" required /><span data-i18n="consentText"></span></label>
+          <button class="btn btn-primary" type="submit" data-i18n="sendLead"></button>
+          <p id="leadResult" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+
+    <footer class="footer shell"><p data-i18n="footer"></p></footer>
+    <script src="script.js"></script>
+  </body>
+</html>
